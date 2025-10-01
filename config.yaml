@@ -2,9 +2,9 @@ routes:
   - name: user_srevice
     path: /user
     type: REST
-    backend: http://localhost:8080
+    backend: http://localhost:8001
 
   - name: product_service
     path: /product
     type: REST
-    backend: http://localhost:8000
+    backend: http://localhost:8002
