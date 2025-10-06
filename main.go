@@ -16,8 +16,11 @@ func main() {
 		return
 	}
 
+	initRedis()
+
 	mux := http.NewServeMux()
 
+	// mux.Handle("/", http.HandlerFunc(proxyHandler(config)))
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		for _, route := range config.Routes {
 			if strings.HasPrefix(r.URL.Path, route.Path) {
@@ -39,7 +42,13 @@ func main() {
 		http.NotFound(w, r)
 	})
 
-	handler := requestIDMiddleware(loggingMiddleware(mux))
+	// handler := requestIDMiddleware(loggingMiddleware(mux))
+
+	handler := requestIDMiddleware(
+		loggingMiddleware(
+			rateLimitMiddleware(cacheMiddleware(mux)),
+		),
+	)
 
 	fmt.Println("Starting server on :8080")
 	log.Fatal(http.ListenAndServe(":8080", handler))
